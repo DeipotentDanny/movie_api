@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const Models = require('./models.js');
 
 const Movies = Models.Movie;
-const Users = Modles.User;
+const Users = Models.User;
 
 mongoose.connect('mongodb://localhost:27017/myFlixDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
@@ -21,76 +21,159 @@ app.use(bodyParser.json());
 
 //location of static files for client-side req
 app.use(express.static('public'));
-app.get('/documentation', (req, res) => {
-  res.sendFile('public/documentation.html', {root: __dirname});
+app.get('/documentation', (_req, res) => {
+  res.sendFile('./public/documentation.html', {root: __dirname});
 });
 
 //assigning response for index.js req
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
   res.send('Welcome to the myFlix Application!');
 });
 
 //assigning the json movies array to endpoint /movies
-app.get('/movies', (req, res) => {
- res.json('Successful GET req')
+app.get('/movies', (_req, res) => {
+ Movies.find()
+  .then((movies) => {
+    res.status(201).json(movies);
+  })
+  .catch((err) => {
+    console.error(err);
+    res.status(500).send('Error: ' + err);
+  });
 });
 
 //Return data concerning a specific movie by title
 app.get('/movies/:title', (req, res) => {
-  res.json('Successful GET req')
+  Movies.findOne({ title: req.params.title })
+    .then((movies) => {
+      res.json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
 //Return a list of movies by genre
 app.get('/movies/genres/:genre', (req, res) => {
-  res.json('Sucessful Get that returns a list of movies within a shared genre')
+  Movies.find({ 'genre.name': req.params.genre })
+    .then((movies) => {
+      res.json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
+    });
 });
 
-//Return data about a director by name (Creation of JSON array 'directors' necessary)
+//Return data about a director by name
 app.get('/movies/directors/:name', (req, res) => {
-  res.json('Successful GET req that returns data concerning a specific director by name')
-  // res.json(directors.find((director) => {
-  //   return director.name === req.params.name
-  // }));
-});
-
-//Return data about an actor by name
-app.get('/movies/actors/:name', (req, res) => {
-  res.json('Succesful GET req that retruns data concerning a specific actor by name');
+  Movies.findOne({ 'director.name': req.params.name }, {director: 1})
+    .then((director) => {
+      res.json(director);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error ' + err);
+    });
 });
 
 //New User Registration (Requires checks on Username, Password, and email)
 app.post('/users', (req, res) => {
-  res.json('Successful POST req that adds new User data to server');
+  Users.findOne({ username: req.body.username })
+    .then((user) => {
+      if (user) {
+        return res.status(400).send(req.body.username + 'already exists.');
+      } else {
+        Users
+          .create({
+            username: req.body.username,
+            password: req.body.password,
+            email: req.body.email,
+            birth_date: req.body.birth_date
+          })
+          .then((user) =>{res.status(201).json(user) })
+        .catch((err) => {
+          console.error(err);
+          res.status(500).send('Error: ' + err);
+        })
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error ' + err);
+    });
 });
 
 //User info update (username, password, email, date of birth)
 app.put('/users/:username', (req, res) => {
-  res.json('Successful PUT req that updates user data on server');
+  Users.findOneAndUpdate({ username: req.params.username }, {$set:
+    {
+      username: req.body.username,
+      password: req.body.password,
+      email: req.body.email,
+      birth_date: req.body.birth_date
+    }
+  },
+  { new: true },
+  (err, updatedUser) => {
+    if(err) {
+      console.error(err);
+      res.status(500).send('Error ' + err);
+    } else {
+      res.json(updatedUser);
+    }
+  });
 });
 
 //Add movie to list of favorites
-app.post('/users/:username/favorites', (req, res) => {
-  res.json('Successful POST req that adds movie data to favorites array on server');
+app.post('/users/:username/favorites/:MovieID', (req, res) => {
+  Users.findOneAndUpdate(
+    { username: req.params.username },
+    { $push: { FavoriteMovies: req.params.MovieID } },
+    { new: true },
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    }
+  );
 });
 
 //Remove a movie from favorites list
-app.delete('/users/:username/favorites', (req, res) => {
-  res.json('Successful DELETE req that removes movie data from favorites array on server');
-});
-
-//Add movie to a WatchList
-app.post('/users/:username/watchlist', (req, res) => {
-  res.json('Successful POST req that adds movie data to watchlist array on server');
-});
-
-//Remove a movie from watchlist
-app.delete('/users/:username/watchlist', (req, res) => {
-  res.json('Successful DELETE req that removes movie data from watchlist on server');
+app.delete('/users/:username/favorites/:MovieID', (req, res) => {
+  Users.findOneAndUpdate(
+    { username: req.params.username },
+    { $pull: { FavoriteMovies: req.params.MovieID } },
+    { new: true },
+    (err, updatedUser) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error ' + err);
+      } else {
+        res.json(updatedUser);
+      }
+    }
+  );
 });
 
 //User Account Deregistration
 app.delete('/users/:username', (req, res) => {
-  res.json('Successful DELETE req that removes user data from server');
+  Users.findOneAndRemove({ username: req.params.username })
+    .then((user) => {
+      if (!user) {
+        res.status(400).send(req.params.username + ' was mot found');
+      } else {
+        res.status(200).send(req.params.username + ' was deleted.');
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error ' + err);
+    });
 });
 
 //error check
