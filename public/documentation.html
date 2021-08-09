@@ -59,13 +59,6 @@
           <td>A JSON object holding data concerning a specific director (bio, birth year, death year)</td>
         </tr>
         <tr>
-          <td>Return data about an actor by name</td>
-          <td>/movies/actors/[name]</td>
-          <td>GET</td>
-          <td>None</td>
-          <td>A JSON object holding data concerning a specific actor (bio, birth year, death year, other movies)</td>
-        </tr>
-        <tr>
           <td>New User Registration</td>
           <td>/users</td>
           <td>POST</td>
@@ -81,31 +74,17 @@
         </tr>
         <tr>
           <td>Add movie to list of favorites</td>
-          <td>/users/[username]/favorites</td>
+          <td>/users/[username]/favorites/[MovieID]</td>
           <td>POST</td>
           <td>A JSON object holding data about the movie to add</td>
           <td>A JSON object holding data about the movie added into the favorites list</td>
         </tr>
         <tr>
           <td>Remove a movie from favorites list</td>
-          <td>/users/[username]/favorites</td>
+          <td>/users/[username]/favorites/[MovieID]</td>
           <td>DELETE</td>
           <td>None</td>
           <td>A text message stating if the movie had been successfully removed from favorites</td>
-        </tr>
-        <tr>
-          <td>Add movie to a WatchList</td>
-          <td>/users/[username]/watchlist</td>
-          <td>POST</td>
-          <td>A JSON object holding data about the movie to add</td>
-          <td>A JSON object holding data about the movie added into the watchlist</td>
-        </tr>
-        <tr>
-          <td>Remove a movie from watchlist</td>
-          <td>/users/[username]/watchlist</td>
-          <td>DELETE</td>
-          <td>None</td>
-          <td>A text message stating if the movie had been successfully removed from watchlist</td>
         </tr>
         <tr>
           <td>User Account Deregistration</td>
