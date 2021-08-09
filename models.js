@@ -9,7 +9,8 @@ const movieSchema = mongoose.Schema({
   desctription: {type: String, required: true},
   director: {
     name: String,
-    bio: String
+    bio: String,
+    birth: String
   },
   released: String,
   rating: String,
