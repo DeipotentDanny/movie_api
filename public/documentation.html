@@ -42,28 +42,71 @@
           <td>/movies/[title]</td>
           <td>GET</td>
           <td>None</td>
-          <td>A JSON object holding data concerning a specific movie (description, genre, director, actors, image URL, if it’s featured, release date, and movie rating)</td>
+          <td>A JSON object holding data concerning a specific movie (description, genre, director, actors, image URL, if it’s featured, release date, and movie rating)
+            <br> e.g.
+            <br> {
+            <br> "title" : "movie title",
+            <br> "genre" : {
+              <br> "name" : "genre name",
+              <br> "description" : "genre desc"
+            <br> },
+            <br> "description" : "movie desc",
+            <br> "director" : {
+              <br> "name" : "dir name",
+              <br> "bio" : "dir bio",
+              <br> "birth" : "director birthday"
+            <br> },
+            <br> "released" : "movie realease year",
+            <br> "rating" : "movie rating",
+            <br> "actors" : ["movie cast"],
+            <br> "imagepath" : movieposter.jpg,
+            <br> "featured" : boolean
+            <br> }
+          </td>
         </tr>
         <tr>
           <td>Return a list of movies by genre</td>
           <td>/movies/genres/[genre]</td>
           <td>GET</td>
           <td>None</td>
-          <td>A JSON object holding data about movies within a genre/s</td>
+          <td>A JSON object holding data about movies within a specific genre</td>
         </tr>
         <tr>
           <td>Return data about a director by name</td>
           <td>/movies/directors/[name]</td>
           <td>GET</td>
           <td>None</td>
-          <td>A JSON object holding data concerning a specific director (bio, birth year, death year)</td>
+          <td>A JSON object holding data concerning a specific director (bio, birth year, death year)
+            <br> e.g.
+            <br> {
+            <br> "name" : "dir name",
+            <br> "bio" : "dir bio",
+            <br> "birth" : "dir birthday"
+            <br> }
+          </td>
         </tr>
         <tr>
           <td>New User Registration</td>
           <td>/users</td>
           <td>POST</td>
-          <td>A JSON object holding data about the user to add</td>
-          <td>A JSON object holding data about the user that was added</td>
+          <td>A JSON object holding data about the user to add
+            <br> e.g.
+            <br> {
+            <br> "username" : String,
+            <br> "password" : String,
+            <br> "email" : String,
+            <br> "birth_date" : Date
+            <br> }
+          </td>
+          <td>A JSON object holding data about the user that was added
+            <br> e.g.
+            <br> {
+            <br> "username" : "testuser1",
+            <br> "password" : "testpassword123",
+            <br> "email" : "testemail2@gmail.com",
+            <br> "birth_date" : "12/25/2000"
+            <br> }
+          </td>
         </tr>
         <tr>
           <td>User info update (username, password, email, date of birth)</td>
@@ -76,8 +119,11 @@
           <td>Add movie to list of favorites</td>
           <td>/users/[username]/favorites/[MovieID]</td>
           <td>POST</td>
-          <td>A JSON object holding data about the movie to add</td>
-          <td>A JSON object holding data about the movie added into the favorites list</td>
+          <td>A JSON object with the movieID to add
+            <br> e.g.
+            <br> {_id: ObjectId("123321")}
+          </td>
+          <td>The users FavoriteMovie array updated with the added movieID</td>
         </tr>
         <tr>
           <td>Remove a movie from favorites list</td>
