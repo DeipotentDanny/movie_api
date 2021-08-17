@@ -35,16 +35,10 @@
           <td>/movies</td>
           <td>GET</td>
           <td>None</td>
-          <td>A JSON object holding data about all movies</td>
-        </tr>
-        <tr>
-          <td>Return data concerning a specific movie by title</td>
-          <td>/movies/[title]</td>
-          <td>GET</td>
-          <td>None</td>
-          <td>A JSON object holding data concerning a specific movie (description, genre, director, actors, image URL, if it’s featured, release date, and movie rating)
+          <td>A JSON object holding data about all movies
             <br> e.g.
             <br> {
+            <br> "_id" : ObjectID(""),
             <br> "title" : "movie title",
             <br> "genre" : {
               <br> "name" : "genre name",
@@ -65,11 +59,63 @@
           </td>
         </tr>
         <tr>
+          <td>Return data concerning a specific movie by title</td>
+          <td>/movies/[title]</td>
+          <td>GET</td>
+          <td>None</td>
+          <td>A JSON object holding data concerning a specific movie (description, genre, director, actors, image URL, if it’s featured, release date, and movie rating)
+            <br> e.g.
+            <br> {
+            <br> "_id" : ObjectId("610d6f14388fb37c75e1308d"),
+            <br> "title" : "Iron Man",
+            <br> "genre" : {
+            <br> "name" : "Action",
+            <br> "description" : "Action films are films in which the protagonist(s) are thrust..."},
+            <br> "description" : "After being held captive in an Afghan cave, billionaire engineer Tony Stark creates a unique weaponized suit of armor to fight evil.",
+            <br> "director" : {
+            <br> "name" : "Jon Favreau",
+            <br> "bio" : "Jon Favreau is an American actor, director, and producer, known for his acting roles in films like 'Very Bad Things.'...",
+            <br> "birth" : "1966-10-19"},
+            <br> "released" : "2008",
+            <br> "rating" : "7.9/10",
+            <br> "actors" : [
+            <br> "Robert Downey Jr.",
+            <br> "Gwyneth Paltrow",
+            <br> "Jeff Bridges"],
+            <br> "imagepath" : "ironMan.jpg",
+            <br> "featured" : true
+            <br> }
+          </td>
+        </tr>
+        <tr>
           <td>Return a list of movies by genre</td>
           <td>/movies/genres/[genre]</td>
           <td>GET</td>
           <td>None</td>
-          <td>A JSON object holding data about movies within a specific genre</td>
+          <td>A JSON object holding data about movies within a specific genre
+            <br> e.g.
+            <br> {
+            <br> "genre": {
+            <br> "name": "Action",
+            <br> "description": "Action films are films in which the protagonist(s)..."},
+            <br> "director": {
+            <br> "name": "Jon Favreau",
+            <br> "bio": "Jon Favreau is an American actor, director, and producer, known for his acting roles in films like 'Very Bad Things.'...",
+            <br> "birth": "1966-10-19"},
+            <br> "actors": [
+            <br> "Robert Downey Jr.",
+            <br> "Gwyneth Paltrow",
+            <br> "Jeff Bridges"],
+            <br> "_id": "610d6f14388fb37c75e1308d",
+            <br> "description": "After being held captive in an Afghan cave, billionaire engineer Tony Stark creates a unique weaponized suit of armor to fight evil.",
+            <br> "released": "2008",
+            <br> "rating": "7.9/10",
+            <br> "imagepath": "ironMan.jpg",
+            <br> "featured": true,
+            <br> "title": "Iron Man"
+            <br> },
+            <br> ...
+          </td>
         </tr>
         <tr>
           <td>Return data about a director by name</td>
@@ -112,8 +158,25 @@
           <td>User info update (username, password, email, date of birth)</td>
           <td>/users/[username]</td>
           <td>PUT/PATCH</td>
-          <td>None</td>
-          <td>A text message indicating the user info that was updated</td>
+          <td>A JSON object holding data to change in regards to a specific user
+            <br> e.g.
+            <br> (JSON must include all of the following:)
+            <br> {
+            <br> "username": "Updated Username",
+            <br> "password" : "Updated Password",
+            <br> "email" : "Updated Email Addess",
+            <br> "birth_date" : "Updated Birthday"
+            <br> }
+          </td>
+          <td>An updated JSON object showing updated values.
+            <br> e.g.
+            <br> {
+            <br> "username": "Updated Username",
+            <br> "password" : "Updated Password",
+            <br> "email" : "Updated Email Addess",
+            <br> "birth_date" : "Updated Birthday"
+            <br> }
+          </td>
         </tr>
         <tr>
           <td>Add movie to list of favorites</td>
@@ -123,14 +186,42 @@
             <br> e.g.
             <br> {_id: ObjectId("123321")}
           </td>
-          <td>The users FavoriteMovie array updated with the added movieID</td>
+          <td>A JSON object with the user data including the new Movie ObjectID added to the FavoriteMovies array
+            <br> e.g.
+            <br> {
+            <br> "FavoriteMovies": [
+            <br> "610d6f14388fb37c75e1308d",
+            <br> "610d7823388fb37c75e1308e",
+            <br> "123321"
+            <br> ],
+            <br> "_id": "610d7bfe388fb37c75e13097",
+            <br> "username": "DeipotentDanny",
+            <br> "password": "password",
+            <br> "email": "email",
+            <br> "birth_date": "1997-21-04"
+            <br> }
+          </td>
         </tr>
         <tr>
           <td>Remove a movie from favorites list</td>
           <td>/users/[username]/favorites/[MovieID]</td>
           <td>DELETE</td>
           <td>None</td>
-          <td>A text message stating if the movie had been successfully removed from favorites</td>
+          <td>An updated JSON object showing the users data without provided Movie ObjectID in the FavoriteMovies array
+            <br> e.g.
+            <br> {
+            <br> "FavoriteMovies": [
+            <br> "610d6f14388fb37c75e1308d",
+            <br> "610d7823388fb37c75e1308e",
+            <br>
+            <br> ],
+            <br> "_id": "610d7bfe388fb37c75e13097",
+            <br> "username": "DeipotentDanny",
+            <br> "password": "password",
+            <br> "email": "email",
+            <br> "birth_date": "1997-21-04"
+            <br> }
+          </td>
         </tr>
         <tr>
           <td>User Account Deregistration</td>
