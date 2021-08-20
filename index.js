@@ -20,7 +20,7 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 const auth = require('./auth.js')(app);
-  passport = require('passport');
+const passport = require('passport');
 
 require('./passport.js');
 
