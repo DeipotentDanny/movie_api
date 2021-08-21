@@ -19,6 +19,22 @@ app.use(morgan('common'));
 
 app.use(bodyParser.json());
 
+const cors = require('cors');
+const allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if(!origin) return callback(null, true);
+    if(allowedOrigins.indexOf(origin) === -1){
+      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+      return callback(new Error(message ), false);
+    }
+    return callback(null, true);
+  }
+}));
+
+const {check, validationResult} = require('express-validator');
+
 const auth = require('./auth.js')(app);
 const passport = require('passport');
 
@@ -84,7 +100,21 @@ app.get('/movies/directors/:name', passport.authenticate('jwt', {session: false}
 });
 
 //New User Registration (Requires checks on Username, Password, and email)
-app.post('/users', (req, res) => {
+app.post('/users',
+  [
+    check('username', 'Username is required').isLength({min:5}),
+    check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('password', 'Password is required').not().isEmpty(),
+    check('email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+
+  const hashedPassword = Users.hashPassword(req.body.password);
   Users.findOne({ username: req.body.username })
     .then((user) => {
       if (user) {
@@ -93,14 +123,14 @@ app.post('/users', (req, res) => {
         Users
           .create({
             username: req.body.username,
-            password: req.body.password,
+            password: hashedPassword,
             email: req.body.email,
             birth_date: req.body.birth_date
           })
           .then((user) =>{res.status(201).json(user) })
-        .catch((err) => {
-          console.error(err);
-          res.status(500).send('Error: ' + err);
+          .catch((err) => {
+            console.error(err);
+            res.status(500).send('Error: ' + err);
         })
       }
     })
@@ -111,7 +141,20 @@ app.post('/users', (req, res) => {
 });
 
 //User info update (username, password, email, date of birth)
-app.put('/users/:username', passport.authenticate('jwt', {session: false}), (req, res) => {
+app.put('/users/:username',
+  [
+    check('username', 'Username is required').isLength({min:5}),
+    check('username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    check('password', 'Password is required').not().isEmpty(),
+    check('email', 'Email does not appear to be valid').isEmail()
+  ], (req, res) => {
+
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({errors: errors.array()});
+  }
+
   Users.findOneAndUpdate({ username: req.params.username }, {$set:
     {
       username: req.body.username,
@@ -187,7 +230,8 @@ app.use((err, req, res, next) => {
   res.status(500).send('Something Failed!');
 });
 
-//assigning server to port 8080
-app.listen(8080, () => {
-  console.log('This app is listening on port 8080.');
+//assigning server to a variable port
+const port = process.env.PORT || 8080;
+app.listen(port, '0.0.0.0',() => {
+ console.log('Listening on Port ' + port);
 });
