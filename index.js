@@ -20,7 +20,7 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 const cors = require('cors');
-const allowedOrigins = ['http://localhost:8080', 'http://testsite.com'];
+const allowedOrigins = ['*']//['http://localhost:8080', 'http://testsite.com'];
 
 app.use(cors({
   origin: (origin, callback) => {
