@@ -22,7 +22,7 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 const cors = require('cors');
-const allowedOrigins = ['http://localhost:8080', 'https://myflixdd.herokuapp.com/', 'http://localhost:1234'];
+const allowedOrigins = ['http://localhost:8080', 'https://myflixdd.herokuapp.com/', 'http://localhost:1234', 'https://www.themoviedb.org/t/p/original/78lPtwv72eTNqFW9COBYI0dWDJa.jpg'];
 
 app.use(cors({
   origin: (origin, callback) => {
