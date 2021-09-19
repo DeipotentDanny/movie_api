@@ -54,7 +54,7 @@ app.get('/', (_req, res) => {
 });
 
 //assigning the json movies array to endpoint /movies
-app.get('/movies', /* passport.authenticate('jwt', {session: false}), */(_req, res) => {
+app.get('/movies', passport.authenticate('jwt', { session: false }), (_req, res) => {
   Movies.find()
     .then((movies) => {
       res.status(201).json(movies);
