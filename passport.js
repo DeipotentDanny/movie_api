@@ -8,24 +8,24 @@ const Users = Models.User,
   ExtractJWT = passportJWT.ExtractJwt;
 
 passport.use(new LocalStrategy({
-  UsernameField: 'Username',
-  PasswordField: 'Password'
-}, (Username, Password, callback) => {
-  console.log(Username + ' ' + Password);
-  Users.findOne({ Username: Username }, (error, user) => {
+  usernameField: 'username',
+  passwordField: 'password'
+},  (username, password, callback) => {
+  console.log(username + ' ' + password);
+  Users.findOne({ username: username }, (error, user) => {
     if (error) {
       console.log(err);
       return callback(err);
     }
 
     if (!user) {
-      console.log('incorrect Username');
-      return callback(null, false, { message: 'Incorrect Username or Password.' });
+      console.log('incorrect username');
+      return callback( null, false, {message: 'Incorrect username or password.'});
     }
 
-    if (!user.validatePassword(Password)) {
-      console.log('incorrect Password');
-      return callback(null, flase, { message: 'Incorrect Password.' });
+    if (!user.validatePassword(password)) {
+      console.log('incorrect password');
+      return callback(null, flase, {message: 'Incorrect password.'});
     }
 
     console.log('finished');
