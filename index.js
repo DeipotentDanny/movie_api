@@ -1,10 +1,14 @@
 // creating a server through Express
 const express = require('express'),
   morgan = require('morgan'), //Utilizying morgan to log data
-  bodyParser = require('body-parser'); //calling body-parser
+  bodyParser = require('body-parser'), //calling body-parser
+  mongoose = require('mongoose'),
+  Models = require('./models.js'),
+  cors = require('cors'),
+  { check, validationResult } = require('express-validator');
 
-const mongoose = require('mongoose');
-const Models = require('./models.js');
+const passport = require('passport');
+require('./passport.js');
 
 const Movies = Models.Movie;
 const Users = Models.User;
@@ -18,29 +22,23 @@ const app = express();
 
 // morgan parameter = common
 app.use(morgan('common'));
-
 app.use(bodyParser.json());
+app.use(cors());
 
-const cors = require('cors');
-const allowedOrigins = ['http://localhost:8080/', 'https://myflixdd.herokuapp.com/', 'http://localhost:1234/'];
+// const allowedOrigins = ['http://localhost:8080/', 'https://myflixdd.herokuapp.com/', 'http://localhost:1234/'];
 
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
-      return callback(new Error(message), false);
-    }
-    return callback(null, true);
-  }
-}));
-
-const { check, validationResult } = require('express-validator');
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if (!origin) return callback(null, true);
+//     if (allowedOrigins.indexOf(origin) === -1) {
+//       let message = 'The CORS policy for this application doesn’t allow access from origin ' + origin;
+//       return callback(new Error(message), false);
+//     }
+//     return callback(null, true);
+//   }
+// }));
 
 const auth = require('./auth.js')(app);
-const passport = require('passport');
-
-require('./passport.js');
 
 //location of static files for client-side req
 app.use(express.static('public'));
