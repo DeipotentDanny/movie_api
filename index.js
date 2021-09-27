@@ -22,7 +22,7 @@ app.use(morgan('common'));
 app.use(bodyParser.json());
 
 const cors = require('cors');
-const allowedOrigins = ['http://localhost:8080', 'https://myflixdd.herokuapp.com/', 'http://localhost:1234'];
+const allowedOrigins = ['http://localhost:8080/', 'https://myflixdd.herokuapp.com/', 'http://localhost:1234/'];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -98,6 +98,18 @@ app.get('/movies/directors/:name', passport.authenticate('jwt', { session: false
     .catch((err) => {
       console.error(err);
       res.status(500).send('Error ' + err);
+    });
+});
+
+//Return data concerning a specific user by username
+app.get('/users/:username', passport.authenticate('jwt', { session: false }), (req, res) => {
+  Users.findOne({ username: req.params.username })
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send('Error: ' + err);
     });
 });
 
